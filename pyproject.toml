@@ -1,6 +1,6 @@
 [project]
 name = "drf-log-writer"
-version = "0.1.0"
+version = "1.2.0"
 description = "Log every Django/DRF request and response as JSON to files and/or the database, with key-based hashing, search, and a column-based admin viewer."
 readme = "README.md"
 license = "MIT"
@@ -16,6 +16,11 @@ classifiers = [
     "Framework :: Django :: 5.2",
     "Programming Language :: Python :: 3",
 ]
+
+[project.urls]
+Homepage = "https://github.com/arasheghdam84/drf-log-writter"
+Issues = "https://github.com/arasheghdam84/drf-log-writter/issues"
+Repository = "https://github.com/arasheghdam84/drf-log-writter"
 
 [project.optional-dependencies]
 drf = ["djangorestframework>=3.14"]
