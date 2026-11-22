@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/css/changelists.css' %}">
+  <style>
+    /* Own layout rather than changelists.css internals, which differ between Django versions. */
+    #changelist.log-viewer { display: block; }
+    #changelist .log-results { overflow-x: auto; width: 100%; }
+    #result_list tr.log-json > td { padding-top: 0; border-top: 0; }
+    #result_list tr.log-json pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 4px 0 8px; }
+  </style>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% block breadcrumbs %}
+{% if ol_breadcrumbs %}
+<ol class="breadcrumbs">
+  <li><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a></li>
+  <li><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
+  <li aria-current="page">{{ title }}</li>
+</ol>
+{% else %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; {{ title }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="module log-viewer" id="changelist">
+      <div id="toolbar">
+        <form method="get" id="changelist-search">
+          <div>
+            <label for="searchbar"><img src="{% static 'admin/img/search.svg' %}" alt="Search"></label>
+            <input type="text" size="40" name="q" value="{{ query }}" id="searchbar" autofocus>
+            <select name="file">
+              <option value="">All files</option>
+              {% for name in files %}
+                <option value="{{ name }}" {% if name == selected_file %}selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" value="{% translate 'Search' %}">
+          </div>
+        </form>
+        {% include "admin/drf_log_writer/columns_form.html" %}
+      </div>
+
+      {% if not files %}
+        <p>No log files found yet.</p>
+      {% else %}
+      <div class="results log-results">
+        <table id="result_list">
+          <thead>
+            <tr>
+              {% for column in columns %}<th scope="col"><div class="text"><span>{{ column }}</span></div></th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>{% for cell in row.cells %}<td>{{ cell }}</td>{% endfor %}</tr>
+              <tr class="log-json">
+                <td colspan="{{ columns|length }}"><details><summary>JSON</summary><pre>{{ row.json }}</pre></details></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="{{ columns|length }}">No matching records.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="paginator">
+        {% if previous_url %}<a href="{{ previous_url }}">&lsaquo; newer</a>{% endif %}
+        page {{ page }}
+        {% if next_url %}<a href="{{ next_url }}">older &rsaquo;</a>{% endif %}
+      </p>
+      {% endif %}
+  </div>
+</div>
+{% endblock %}

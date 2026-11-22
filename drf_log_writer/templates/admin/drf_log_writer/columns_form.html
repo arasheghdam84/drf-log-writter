@@ -1,0 +1,8 @@
+<form method="get" style="margin: 8px 0;">
+  {% for key, value in preserved_params %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endfor %}
+  <label for="log-columns">Columns (dotted JSON paths, comma-separated):</label>
+  <input id="log-columns" type="text" name="columns" value="{{ log_columns }}" style="width: 60%;">
+  <input type="submit" value="Apply">
+  <a href="?columns=">reset</a>
+</form>
+<p class="help">{{ search_help }}</p>
